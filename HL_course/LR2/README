@@ -1,5 +1,8 @@
-Лабораторная работа №2
-Кеширование Цель Получение практических навыков ускорении работы с данными с помощью кеширования.
+Лабораторная работа 2. Кеширование 
+Спецкурс "Управление IT-проектами (Проектирование высоконагруженных приложений)"
+
+Цель 
+Получение практических навыков ускорении работы с данными с помощью кеширования.
 
 Задание
 Разработать приложение на языке C++ осуществляющее хранение сущности Person и предоставляющее REST API по добавлению и получению сущности Person. 
@@ -7,11 +10,32 @@
 - Данные должны храниться в СУБД MySQL;
 - Данные должны кешироваться в Apache Ignite;
 - Сущность Person должна содержать следующие поля:
-  login – уникальное поле
-  first_name
-  last_name
-  age
+    login – уникальное поле
+    first_name
+    last_name
+    age
 - Реализовать API
-  HTTP GET http://localhost:8080/person?login=логин должен возвращать JSON объект  с полями login, first_name,last_name,age метод должен возвращать данные из кеша;
-  HTTP POST http://localhost:8080/person с параметрами login, first_name,last_name,age метод должен сохранять данные в СУБД MySQL и в кеш; 
+    HTTP GET http://localhost:8080/person?login=логин должен возвращать JSON объект с полями login, first_name,last_name,age метод должен возвращать данные из кеша;
+    HTTP POST http://localhost:8080/person с параметрами login, first_name,last_name,age метод должен сохранять данные в СУБД MySQL и в кеш; 
  
+Запуск
+$ docker-compose up -d
+$ ./start.sh
+ 
+Нагрузочное тестирование
+Для нагрузочного тестирования был установлен benchmarking tool: wrk.
+$ wrk -c 10 -d 60 -t 10 'http:/localhost:80/person?login=vmRLDEO3Ry5H'
+Приложение с БД и Apache Ignite, состоящий из двух узлов, были запущены на одной машине.
+
+Количество ответов в секуду и задержка в зависимости от числа потоков:
+С использованием Apache Ignite
+Threads = 1 | Req/Sec = 2213.11 | Latency = 6.72
+Threads = 2 | Req/Sec = 1702.01 | Latency = 8.49
+Threads = 6 | Req/Sec = 1637.45 | Latency = 9.14
+Threads = 10 | Req/Sec = 1587.36 | Latency = 10.03
+
+Без использования Apache Ignite
+Threads = 1 | Req/Sec = 263.08 | Latency = 56.37
+Threads = 2 | Req/Sec = 254.43 | Latency = 60.01
+Threads = 6 | Req/Sec = 243.71 | Latency = 82.24
+Threads = 10 | Req/Sec = 240.52 | Latency = 112.89
