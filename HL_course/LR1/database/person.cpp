@@ -32,11 +32,11 @@ namespace database
             // (re)create table
             Statement create_stmt(session);
             create_stmt << "CREATE TABLE IF NOT EXISTS `Person` (`id` INT NOT NULL AUTO_INCREMENT,"
-                        << "`login` VARCHAR(256) CHARACTER SET utf8 COLLATE utf8_unicode_ci NULL UNIQUE,"
+                        << "`login` VARCHAR(256) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL,"
                         << "`first_name` VARCHAR(256) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL,"
                         << "`last_name` VARCHAR(256) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL,"
                         << "`age` INT NOT NULL,"
-                        << "PRIMARY KEY (`id`),KEY `fn` (`first_name`),KEY `ln` (`last_name`));",
+                        << "PRIMARY KEY (`id`), UNIQUE KEY `log_hash` (`login`), KEY `fn` (`first_name`),KEY `ln` (`last_name`));",
                 now;
         }
 
@@ -249,8 +249,6 @@ namespace database
                 use(_last_name),
                 use(_age),
                 now;
-
-            insert.execute();
 
             Poco::Data::Statement select(session);
             select << "SELECT LAST_INSERT_ID()",
