@@ -1,4 +1,4 @@
-Лабораторная работа 1
+# Лабораторная работа 1 #
 Спецкурс "Управление IT-проектами (Проектирование высоконагруженных приложений)"
 
 Цель Получение практических навыков в построении сервисов, работающих с данными.
@@ -15,4 +15,19 @@
   HTTP GET http://localhost:8080/person?first_name=маска&last_name=маска должен возвращать массив JSON объектов с полями login, first_name,last_name,age;
   HTTP POST http://localhost:8080/personс параметрами login, first_name,last_name,age.
   
-  Первоначальное заполнение БД расположено в sql_load.
+ ## Запуск ##
+  ```bash
+$ ./start.sh
+```
+ 
+ ## Нагрузочное тестирование ##
+ Для нагрузочного тестирования был установлен benchmarking tool: wrk.
+ ```bash
+$ wrk -c 10 -d 60 -t 10 'http:/localhost:80/person?first_name=Alison&last_name='
+```
+Количество ответов в секуду и задержка в зависимости от числа потоков:
+
+Threads = 1 | Req/Sec = 263.08 | Latency = 56.37
+Threads = 2 | Req/Sec = 254.43 | Latency = 60.01
+Threads = 6 | Req/Sec = 243.71 | Latency = 82.24
+Threads = 10 | Req/Sec = 240.52 | Latency = 112.89
