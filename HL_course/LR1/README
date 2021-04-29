@@ -11,9 +11,9 @@
     last_name
     age
 - Реализовать API
-  HTTP GET http://localhost:8080/person?login=логин должен возвращать JSON объект с полями login, first_name,last_name,age;
-  HTTP GET http://localhost:8080/person?first_name=маска&last_name=маска должен возвращать массив JSON объектов с полями login, first_name,last_name,age;
-  HTTP POST http://localhost:8080/personс параметрами login, first_name,last_name,age.
+  HTTP GET http://localhost:80/person?login=логин должен возвращать JSON объект с полями login, first_name,last_name,age;
+  HTTP GET http://localhost:80/person?first_name=маска&last_name=маска должен возвращать массив JSON объектов с полями login, first_name,last_name,age;
+  HTTP POST http://localhost:80/personс параметрами login, first_name,last_name,age.
   
 Запуск
 $ ./start.sh
