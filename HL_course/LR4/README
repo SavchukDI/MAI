@@ -24,9 +24,7 @@
     cmake, build
 - запускт докер контейнеров
     $ docker-compose up -d
-- сборка скрипта для заполнения шардов
-    $ g++ data_sharding.cpp -o data_sharding
-- запуск скрипта для заполнения шардов
+- заполнение шардов
     $ ./data_sharding
 - настройка БД
     $ mysql -p
