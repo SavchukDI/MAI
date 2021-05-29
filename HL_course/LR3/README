@@ -37,7 +37,7 @@
     $ ./start.sh
     
 Остановка проекта:
-- удаление данных с узлов БД
+- удаление таблиц на шардах
     $ mysql -p
     mysql> source data/data_sh_clear.sql;
     mysql> exit;
