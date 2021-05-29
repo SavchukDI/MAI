@@ -1,0 +1,77 @@
+Лабораторная работа 4. Очередь
+Спецкурс "Управление IT-проектами (Проектирование высоконагруженных приложений)"
+
+Цель 
+Получение практических навыков в реализации асинхронной записи в СУБД.
+
+Задание
+Разработать приложение на языке C++ осуществляющее хранение сущности Person и предоставляющее REST API по добавлению и получению сущности Person.
+Должны выполняться следующие условия:
+  - Данные должны храниться в СУБД MySQL;
+  - Сущность Person должна содержать следующие поля:
+      login – уникальное поле
+      first_name
+      last_name
+      age
+  - Реализовать API
+      HTTP GET http://localhost:8080/person?login=логин возвращать JSON объект  с полями login, first_name,last_name,age
+      HTTP POST http://localhost:8080/person с параметрами login, first_name,last_name,age – должен добавлять данные в очередь
+      
+Реализовать приложение, которое осуществляет чтение данных из очереди и сохранение их в СУБД MySQL.
+ 
+Запуск проекта:
+- сборка проекта
+    cmake, build
+- запускт докер контейнеров
+    $ docker-compose up -d
+- сборка скрипта для заполнения шардов
+    $ g++ data_sharding.cpp -o data_sharding
+- запуск скрипта для заполнения шардов
+    $ ./data_sharding
+- настройка БД
+    $ mysql -p
+    mysql> source data/data_sh_init.sql;
+    mysql> source data/data_sh.sql;
+    mysql> exit;
+- запуск сервера
+    $ ./start.sh
+- запуск "Consumer" для очереди
+    $ ./start_writer.sh
+    
+Остановка проекта:
+- удаление таблиц на шардах
+    $ mysql -p
+    mysql> source data/data_sh_clear.sql;
+    mysql> exit;
+- отключение докер контейнеров
+    $ docker-compose stop
+
+ 
+Нагрузочное тестирование
+Для нагрузочного тестирования был установлен benchmarking tool: wrk.
+
+Тест на запись:
+- использование очередей Apache Kafka
+Threads = 1 | Req/Sec = 88.12 | Latency = 201.41
+Threads = 2 | Req/Sec = 52.43 | Latency = 211.26
+Threads = 6 | Req/Sec = 58.36 | Latency = 215.74
+Threads = 10 | Req/Sec = 51.47 | Latency = 209.23
+
+- без использования очередей
+Threads = 1 | Req/Sec = 35.13 | Latency = 410.78
+Threads = 2 | Req/Sec = 40.21 | Latency = 372.32
+Threads = 6 | Req/Sec = 39.55 | Latency = 373.94
+Threads = 10 | Req/Sec = 38.87 | Latency = 400.52
+
+Тест на чтение:
+- использование кеша Apache Ignite
+Threads = 1 | Req/Sec = 2517.37 | Latency = 6.17
+Threads = 2 | Req/Sec = 2891.11 | Latency = 5.21
+Threads = 6 | Req/Sec = 2617.43 | Latency = 5.25
+Threads = 10 | Req/Sec = 2587.39 | Latency = 5.34
+
+- без использования кеша
+Threads = 1 | Req/Sec = 263.08 | Latency = 56.37
+Threads = 2 | Req/Sec = 254.43 | Latency = 60.01
+Threads = 6 | Req/Sec = 243.71 | Latency = 82.24
+Threads = 10 | Req/Sec = 240.52 | Latency = 112.89
