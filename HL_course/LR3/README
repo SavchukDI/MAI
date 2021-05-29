@@ -1,0 +1,55 @@
+Лабораторная работа 3. Sharding 
+Спецкурс "Управление IT-проектами (Проектирование высоконагруженных приложений)"
+
+Цель 
+Получение практических навыков в построении сервисов, работающих с распределенными данными.
+
+Задание
+Разработать приложение на языке C++ осуществляющее хранение сущности Person и предоставляющее REST API по добавлению и получению сущности Person.
+Должны выполняться следующие условия:
+  - Данные должны храниться в СУБД MySQL;
+  - Необходимо распределить данные между двумя серверами равномерно по полю login с помощью ProxySQL; 
+  - Сущность Person должна содержать следующие поля:
+      login – уникальное поле
+      first_name
+      last_name
+      age
+  - Реализовать API
+      HTTP GET http://localhost:8080/person?login=логин возвращать JSON объект  с полями login, first_name,last_name,age
+      HTTP GET http://localhost:8080/person?first_name=маска&last_name=маска возвращать массив JSON объектов с полями login, first_name,last_name,age
+      HTTP POST http://localhost:8080/person с параметрами login, first_name,last_name,age 
+ 
+Запуск проекта:
+- сборка проекта
+    cmake, build
+- запускт докер контейнеров
+    $ docker-compose up -d
+- сборка скрипта для заполнения шардов
+    $ g++ data_sharding.cpp -o data_sharding
+- запуск скрипта для заполнения шардов
+    $ ./data_sharding
+- настройка БД
+    $ mysql -p
+    mysql> source data/data_sh_init.sql;
+    mysql> source data/data_sh.sql;
+    mysql> exit;
+- запуск сервера
+    $ ./start.sh
+    
+Остановка проекта:
+- удаление данных с узлов БД
+    $ mysql -p
+    mysql> source data/data_sh_clear.sql;
+    mysql> exit;
+- отключение докер контейнеров
+    $ docker-compose stop
+
+ 
+Нагрузочное тестирование
+Для нагрузочного тестирования был установлен benchmarking tool: wrk.
+
+Количество ответов в секуду и задержка в зависимости от числа потоков:
+Threads = 1 | Req/Sec = 2517.37 | Latency = 6.17
+Threads = 2 | Req/Sec = 2891.11 | Latency = 5.21
+Threads = 6 | Req/Sec = 2617.43 | Latency = 5.25
+Threads = 10 | Req/Sec = 2587.39 | Latency = 5.34
