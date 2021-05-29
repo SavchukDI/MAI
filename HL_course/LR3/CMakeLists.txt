@@ -10,18 +10,26 @@ find_package(Threads)
 find_package(ZLIB)
 find_package(Poco REQUIRED COMPONENTS Foundation Util Net XML JSON Crypto NetSSL)
 
+
 if(NOT ${Poco_FOUND})
     message(FATAL_ERROR "Poco C++ Libraries not found.")
 endif()
-include_directories(SYSTEM ${IGNITE_INCLUDE_DIR})
+
 include_directories(${Poco_INCLUDE_DIRS})
 include_directories(${GTEST_INCLUDE_DIRS})
 include_directories("/usr/include/mysql")
 include_directories("/usr/local/include/mysql")
+include_directories(${Boost_INCLUDE_DIR})
+include_directories(SYSTEM ${IGNITE_INCLUDE_DIR})
 link_directories("/usr/local/lib")
 
 add_executable(gtests tests.cpp config/config.cpp database/database.cpp database/person.cpp database/cache.cpp)
 add_executable(${EXAMPLE_BINARY} main.cpp config/config.cpp database/database.cpp database/person.cpp database/cache.cpp)
+
+add_executable(data_sharding data_sharding.cpp)
+target_compile_options(data_sharding PRIVATE -Wall -Wextra -pedantic -Werror )
+set_target_properties(data_sharding PROPERTIES LINKER_LANGUAGE CXX)
+set_target_properties(data_sharding PROPERTIES CXX_STANDARD 17 CXX_STANDARD_REQUIRED ON)
 
 target_include_directories(${EXAMPLE_BINARY} PRIVATE "${CMAKE_BINARY_DIR}")
 
@@ -52,7 +60,6 @@ target_link_libraries(gtests PRIVATE
         "mysqlclient"
         ZLIB::ZLIB)
 
-
 set_target_properties(${EXAMPLE_BINARY} PROPERTIES LINKER_LANGUAGE CXX)
 set_target_properties(${EXAMPLE_BINARY} PROPERTIES CXX_STANDARD 17 CXX_STANDARD_REQUIRED ON)
 set_target_properties(gtests PROPERTIES CXX_STANDARD 17 CXX_STANDARD_REQUIRED ON)
@@ -63,6 +70,7 @@ set(CPACK_GENERATOR DEB)
 set(CPACK_PACKAGE_VERSION_MAJOR "${PROJECT_VERSION_MAJOR}")
 set(CPACK_PACKAGE_VERSION_MINOR "${PROJECT_VERSION_MINOR}")
 set(CPACK_PACKAGE_VERSION_PATCH "${PROJECT_VERSION_PATCH}")
+set(CPACK_PACKAGE_CONTACT Dmitriy.Dzyuba@mts.ru)
 include(CPack)
 
 enable_testing()
